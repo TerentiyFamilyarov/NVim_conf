@@ -62,8 +62,19 @@ if not vim.loop.fs_stat(lazypath) then
          "catppuccin/nvim",
          name = "catppuccin",
          priority = 1,
+         lazy = true
+         -- config = function()
+         --    vim.cmd.colorscheme("catppuccin-mocha")
+         -- end,
+      },
+      --
+      {
+         "dasupradyumna/midnight.nvim",
+         name = "midnight",
+         priority = 2,
+         lazy = false,
          config = function()
-            vim.cmd.colorscheme("catppuccin-mocha")
+            vim.cmd.colorscheme("midnight")
          end,
       },
       -- Комментарии
