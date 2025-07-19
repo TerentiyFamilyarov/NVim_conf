@@ -54,30 +54,19 @@ if not vim.loop.fs_stat(lazypath) then
       "--branch=stable",
       lazypath,
    })
-      end
-      vim.opt.rtp:prepend(lazypath)
-      require("lazy").setup({
-      -- Тема (Catppuccin)
-      {
-         "catppuccin/nvim",
-         name = "catppuccin",
-         priority = 1,
-         lazy = true
-         -- config = function()
-         --    vim.cmd.colorscheme("catppuccin-mocha")
-         -- end,
-      },
-      --
-      {
-         "dasupradyumna/midnight.nvim",
-         name = "midnight",
-         priority = 2,
-         lazy = false,
-         config = function()
-            vim.cmd.colorscheme("midnight")
-         end,
-      },
-      -- Комментарии
+end
+vim.opt.rtp:prepend(lazypath)
+require("lazy").setup({
+   -- Тема onedarkpro
+   {
+      "olimorris/onedarkpro.nvim",
+       name = "onedarkpro",
+       priority = 1,
+       config = function()
+         vim.cmd.colorscheme("onedark_dark")
+       end,
+   },
+   -- Комментарии
       {
          "numToStr/Comment.nvim",
          config = function()
@@ -121,7 +110,7 @@ if not vim.loop.fs_stat(lazypath) then
          config = function()
             require("mason").setup()
             require("mason-lspconfig").setup({
-               ensure_installed = { "clangd" }
+               ensure_installed = { "clangd", "pylsp" }
             })
          end,
       },
@@ -143,12 +132,25 @@ if not vim.loop.fs_stat(lazypath) then
                   ["<Esc>"] = cmp.mapping.abort(),
                }),
                sources = cmp.config.sources({
-                  { name = "nvim_lsp" },
+                  { name = "nvim_lsp",
+                    entry_filter = function(entry)
+                      local file_path = entry:get_documentation().file_path or ""
+                      -- Игнорировать пути, содержащие "site-packages" (Python) или "node_modules" (JS)
+                      return not (file_path:match("site%-packages") or file_path:match("node_modules"))
+                    end
+                  },
                   { name = "buffer" },
                   { name = "path" },
                }),
             })
          end,
+      },
+      -- Инфа об затупах Trouble
+      {
+        "folke/trouble.nvim",
+        opts = {}, -- for default options, refer to the configuration section for custom setup.
+        cmd = "Trouble",
+        keys = {},
       },
 -- =============================================
 -- Горячие клавиши
@@ -162,39 +164,54 @@ if not vim.loop.fs_stat(lazypath) then
          },
          keys = {
             {
-               "<Leader>?",
-               function()
-                  require("which-key").show({global = false})
-               end,
-               desc = "Buffer Local Keymaps (which-key)",
-            },
-            {
                "<Leader>e",
-               function()
-                  vim.keymap.set("n","<Leader>e",":NvimTreeToggle<CR>", {silent = true})
-               end,
+               "<cmd>NvimTreeToggle<cr>",
                desc = "Toggle NvimTree",
              },
              {
                "<Leader>cp",
-               function()
-                  vim.keymap.set('n', '<leader>cp', ':let @+ = expand("%:p")<CR>', { silent = true })
-               end,
+               '<cmd>let @+ = expand("%:p")<cr>',
                desc = "Copy full path",
              },
              {
                "<Leader>cf",
-               function()
-                  vim.keymap.set('n', '<leader>cf', ':let @+ = expand("%:t")<CR>', { silent = true })
-               end,
+               '<cmd>let @+ = expand("%:t")<cr>',
                desc = "Copy file name",
              },
              {
                "<Leader>cr",
-               function()
-                  vim.keymap.set('n', '<leader>cr', ':let @+ = expand("%")<CR>', { silent = true })
-               end,
+               '<cmd>let @+ = expand("%")<cr>',
                desc = "Copy relative path",
+             },
+             {
+               "<leader>xx",
+               "<cmd>Trouble diagnostics toggle<cr>",
+               desc = "Diagnostics (Trouble)",
+             },
+             {
+               "<leader>xX",
+               "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+               desc = "Buffer Diagnostics (Trouble)",
+             },
+             {
+               "<leader>cs",
+               "<cmd>Trouble symbols toggle focus=false<cr>",
+               desc = "Symbols (Trouble)",
+             },
+             {
+               "<leader>cl",
+               "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+               desc = "LSP Definitions / references / ... (Trouble)",
+             },
+             {
+               "<leader>xL",
+               "<cmd>Trouble loclist toggle<cr>",
+               desc = "Location List (Trouble)",
+             },
+             {
+               "<leader>xQ",
+               "<cmd>Trouble qflist toggle<cr>",
+               desc = "Quickfix List (Trouble)",
              },
          },
       },
