@@ -132,13 +132,7 @@ require("lazy").setup({
                   ["<Esc>"] = cmp.mapping.abort(),
                }),
                sources = cmp.config.sources({
-                  { name = "nvim_lsp",
-                    entry_filter = function(entry)
-                      local file_path = entry:get_documentation().file_path or ""
-                      -- Игнорировать пути, содержащие "site-packages" (Python) или "node_modules" (JS)
-                      return not (file_path:match("site%-packages") or file_path:match("node_modules"))
-                    end
-                  },
+                  { name = "nvim_lsp"},
                   { name = "buffer" },
                   { name = "path" },
                }),
